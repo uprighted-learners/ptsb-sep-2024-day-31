@@ -5,6 +5,9 @@ const PORT = 8080
 // parse body requests
 app.use(express.json())
 
+// search the public directory as static files
+app.use(express.static('public'))
+
 app.get('/hello', (req, res) => {
     res.send('Hello World!')
 })
@@ -147,6 +150,27 @@ app.delete("/api/animals/:id", (req, res) => {
             )
         }
         res.send(animals)
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+// GET - /api/search - search for animals by name
+app.get("/api/search", (req, res) => {
+    try {
+        // capture the query string
+        const search = req.query.name
+
+        // validate the search query
+        if (search === "") {
+            res.status(400).send("Please provide a search query")
+        } else {
+            // find the animals that match the search query
+            const results = animals.filter(
+                animal => animal.name.toLowerCase().includes(search.toLowerCase())
+            )
+            res.send(results)
+        }
     } catch (error) {
         console.log(error)
     }
